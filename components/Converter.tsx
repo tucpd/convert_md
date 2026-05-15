@@ -174,10 +174,9 @@ export default function Converter() {
 
             {markdown ? (
               <>
-                <div className="flex-1 overflow-y-auto mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex-1 overflow-y-auto max-h-[600px] mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
                   <pre className="text-sm text-slate-700 whitespace-pre-wrap break-words font-mono">
-                    {markdown.substring(0, 2000)}
-                    {markdown.length > 2000 && '...'}
+                    {markdown}
                   </pre>
                 </div>
 
