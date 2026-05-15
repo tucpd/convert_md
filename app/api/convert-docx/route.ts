@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mammoth from 'mammoth';
+import TurndownService from 'turndown';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,38 +14,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Demo markdown - in production, use mammoth or similar
-    const markdown = `# Document from ${file.name}
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-## Extracted Content
+    // Convert DOCX to HTML using mammoth
+    const result = await mammoth.convertToHtml({ buffer });
+    const html = result.value; // The generated HTML
+    
+    // Check if any text/HTML was generated
+    if (!html && html.trim() === '') {
+      throw new Error('No content could be extracted from this DOCX file.');
+    }
 
-This is a demonstration of the DOCX to Markdown converter.
+    // Convert HTML to Markdown using turndown
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced'
+    });
+    
+    let markdown = turndownService.turndown(html);
 
-In production, this would extract the actual text and formatting from your Word document and convert it to markdown.
-
-### Features
-
-- Text extraction from DOCX files
-- Support for headings and formatting
-- List and table conversion
-- Preserves document structure
-
-### Usage Instructions
-
-1. Upload a DOCX file using the file chooser
-2. The converter processes the document
-3. View the markdown preview
-4. Download the markdown file
-
----
-
-*This is a demonstration version with placeholder content.*`;
+    if (!markdown || markdown.trim() === '') {
+       markdown = 'No textual content could be extracted from this document.';
+    }
 
     return NextResponse.json({ markdown });
-  } catch (error) {
+  } catch (error: any) {
     console.error('DOCX conversion error:', error);
     return NextResponse.json(
-      { error: 'Failed to convert DOCX' },
+      { error: error?.message || 'Failed to convert DOCX' },
       { status: 500 }
     );
   }
