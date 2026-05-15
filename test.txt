@@ -1,0 +1,7 @@
+This is a test document for PDF to Markdown conversion.
+
+Here is the first paragraph with some content. This is a simple test to verify that the conversion is working properly.
+
+Second paragraph starts here. The PDF contains multiple paragraphs separated by line breaks. This should help us test the markdown formatting.
+
+Third paragraph with more content. Testing the conversion functionality with different text formats and structures.
